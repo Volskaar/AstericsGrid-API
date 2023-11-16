@@ -1,7 +1,7 @@
 # AstericsGrid-API
 German Grammar Correction API for the AstericsGrid Project
 
-##########################################################
+----------------------------------------------------------
 
-Dependencies:
+### Dependencies:
 pip install Flask

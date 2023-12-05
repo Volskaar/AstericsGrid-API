@@ -4,7 +4,8 @@ German Grammar Correction API for the AstericsGrid Project
 ----------------------------------------------------------
 
 ### Dependencies:
-pip install Flask
+pip install Flask <br>
+pip install --upgrade language_tool_python
 
 ### How to run:
 1. clone repo to local <br>

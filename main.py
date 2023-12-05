@@ -1,24 +1,42 @@
 from flask import Flask, jsonify, request
-import json
+import service
+
+##################################################################
+##################################################################
 
 app = Flask(__name__)
+
+##################################################################
+##################################################################
 
 # Test default route by returning JSON object
 @app.route('/', methods=['GET'])
 def index():
-    return jsonify({'name': 'max', 'email': 'max@mustermann.com'})
-
-# POST route with body returning sent content
-@app.route('/', methods=['POST'])
-def return_content():
-    data = json.loads(request.data)
-    return jsonify(data)
+    return "", 200
+    
+##################################################################
+##################################################################
 
 # not implemented routes
 @app.route('/', methods=['PUT'])
 def put_not_implemented():
-    return "<p>not implemented</p>"
+    return "", 501
 
 @app.route('/', methods=['DELETE'])
 def delete_not_implemented():
-    return "<p>not implemented</p>"
+    return "", 501
+
+##################################################################
+##################################################################
+
+# POST route handling request body
+@app.route('/', methods=['POST'])
+def return_content():
+    # access and decode data in request body
+    data = str(request.data.decode('UTF-8'))
+
+    # handle request data in service
+    output = service.handle_request(data)
+
+    # return corrected string in response
+    return output

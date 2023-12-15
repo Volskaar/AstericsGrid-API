@@ -1,27 +1,47 @@
 import spacy
 
+# load german spacy model
+
 nlp = spacy.load("de_core_news_sm")
 
 #####################################################################
 
+# debug function to inspect all tokens of a sentence
+
+def inspect_tokens(sentence):
+    doc = nlp(sentence)
+    for token in doc:
+        print(f"Text: {token.text}, Dep: {token.dep_}, Tag: {token.tag_}")
+
+#####################################################################
+        
+# extract the subject from the sentence
+
 def extract_subject(sentence):
     doc = nlp(sentence)
     
+    subject = None
+    
     for token in doc:
-        # Check for nominal subjects
-        if "subj" in token.dep_ and "nom" in token.dep_:
+        # Check for pronouns in subject position
+        if token.pos_ == "PRON" or token.pos_ == "NOUN" and token.dep_ in ["sb", "da", "nom"]:
             subject = token.text
             break  # Stop after finding the first subject
     
-    print("Subj: " + subject)
+    print("Subjekt: " + str(subject))
     return subject
+
+#####################################################################
+
+# extract verb from sentence
 
 def extract_verb(sentence):
     doc = nlp(sentence)
     
     for token in doc:
         # Check for the main verb (ROOT) in the sentence
-        if "ROOT" in token.dep_ and "verb" in token.tag_:
+        #if token.dep_ == "ROOT" and token.pos_ == "VERB":
+        if token.dep_ == "ROOT":
             verb = token.text
             break  # Stop after finding the main verb
     
@@ -30,19 +50,25 @@ def extract_verb(sentence):
 
 #####################################################################
 
-def is_plural(word):
-    print("check word: " + word)
+# put verb into base-form for text-file search
+
+def lemmatize_word(word):
     doc = nlp(word)
-    if len(doc) > 0:
-        return doc[0].tag_ == "NNS"
-    else:
-        # Handle the case where the doc has no tokens (e.g., empty string)
-        return False
+    # Assuming the word is a single token, take the lemma of the first token
+    return doc[0].lemma_
+
+#####################################################################
+
+#  check if Subject is plural or singular
+
+def is_plural(word):
+    return False
 
 #####################################################################
 
 def read_line_file(word, line):
-    word_path = "/verbs/" + word + ".txt"
+    verb = lemmatize_word(word)
+    word_path = "verbs/" + verb + ".txt"
     print(word_path)
 
     try:
@@ -58,6 +84,8 @@ def read_line_file(word, line):
 #####################################################################
 
 def rule_based_correction(sentence):
+    inspect_tokens(sentence)
+
     verb = extract_verb(sentence)
     subject = extract_subject(sentence)
 
@@ -87,11 +115,13 @@ def rule_based_correction(sentence):
     elif subject == "es" or subject == "Es":
         correct_verb = read_line_file(verb, 3)
 
-    # rules for case 3 (things/names) or case 6 (things/names plural)
+    # rules for case 3 (things/names singular) or case 6 (things/names plural)
     else:
         if is_plural(subject):
+            print("Ist plural")
             correct_verb = read_line_file(verb, 6)
         else:
+            print("Ist singular")
             correct_verb = read_line_file(verb, 3)
 
     corrected_sentence = sentence.replace(verb, correct_verb.strip())

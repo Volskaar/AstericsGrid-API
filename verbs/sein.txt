@@ -1,0 +1,6 @@
+bin
+bist
+ist
+sind
+seid
+sind

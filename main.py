@@ -1,5 +1,7 @@
 from flask import Flask, request
-import service
+import service_language_tool
+import service_duden_api
+import service_spacy_rules
 
 ##################################################################
 
@@ -31,7 +33,7 @@ def run_python_language_tool():
     data = str(request.data.decode('UTF-8'))
 
     # handle request data in service
-    output = service.handle_request(data)
+    output = service_language_tool.handle_request(data)
 
     # return corrected string in response
     return output, 200
@@ -42,5 +44,14 @@ def run_python_language_tool():
 @app.route('/duden', methods=['POST'])
 def run_duden_api_check():
     text = str(request.data.decode('UTF-8'))
-    output = service.duden_api_request(text)
+    output = service_duden_api.duden_api_request(text)
+    return output, 200
+
+##################################################################
+
+# POST route testing/employing spacy analyzer and rule based correction
+@app.route('/spacy', methods=['POST'])
+def run_spacy_grammar_check():
+    text = str(request.data.decode('UTF-8'))
+    output = service_spacy_rules.rule_based_correction(text)
     return output, 200

@@ -1,22 +1,4 @@
-import language_tool_python
 import requests
-
-tool = language_tool_python.LanguageToolPublicAPI('de-DE')
-
-def handle_request(data):
-    # use python language tool to correct sentence
-    corrected_data = tool.correct(data)
-
-    print("Original:  ", data)
-    print("Corrected: ", corrected_data)
-
-    #close opened connection to tool
-    tool.close()
-
-    # return corrected sentence
-    return corrected_data
-
-
 
 def duden_api_request(text):
     # Generate POST request with settings to duden API

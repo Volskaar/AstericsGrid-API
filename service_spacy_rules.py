@@ -1,4 +1,5 @@
 import spacy
+import service_language_tool
 
 # load german spacy model
 
@@ -23,10 +24,11 @@ def extract_subject(sentence):
     subject = None
     print("Test 0")
     for token in doc:
-        # Check for pronouns in subject position
+        # checks for "Pronomen", "Präpositionen" und "Nomen" mit den dependencies sb, nom und nk
+        # Stop after finding the first subject
         if token.pos_ in ["PRON", "PROPN", "NOUN"] and token.dep_ in ["sb", "nom", "nk"]:
             subject = token.text
-            break  # Stop after finding the first subject
+            break
     
     print("Subjekt: " + str(subject))
     return subject
@@ -34,16 +36,13 @@ def extract_subject(sentence):
 #####################################################################
 
 # extract verb from sentence
-
+# Stop after finding the first subject
 def extract_verb(sentence):
     doc = nlp(sentence)
     
     for token in doc:
-        # Check for the main verb (ROOT) in the sentence
-        #if token.dep_ == "ROOT" and token.pos_ == "VERB":
-        if token.dep_ == "ROOT":
+        if token.dep_ == "ROOT" and token.pos_ == "VERB":
             verb = token.text
-            break  # Stop after finding the main verb
     
     print("Verb: " + verb)
     return verb
@@ -54,7 +53,6 @@ def extract_verb(sentence):
 
 def lemmatize_word(word):
     doc = nlp(word)
-    # Assuming the word is a single token, take the lemma of the first token
     return doc[0].lemma_
 
 #####################################################################
@@ -72,7 +70,7 @@ def read_line_file(word, line):
     print(word_path)
 
     try:
-        with open(word_path, 'r') as datei:
+        with open(word_path, 'r', encoding="utf-8") as datei:
             zeilen = datei.readlines()
             if 1 <= line <= len(zeilen):
                 return zeilen[line - 1]
@@ -82,13 +80,14 @@ def read_line_file(word, line):
         return "Die angegebene Datei wurde nicht gefunden."
 
 #####################################################################
+    
 def getSubjects(type):
     subjects = []
     word_path = "subjects/" + type + ".txt"
-    print(word_path)
 
     try:
-        with open(word_path, 'r') as datei:
+        with open(word_path, 'r', encoding="utf-8") as datei:
+            print(word_path)
             zeilen = datei.readlines()
             for line in zeilen:
                 subjects.append(str(line))
@@ -97,10 +96,36 @@ def getSubjects(type):
         return "Die angegebene Datei wurde nicht gefunden."
     
     return subjects
+
 #####################################################################
 
+# turn all uppercase to leading capitalization
+
+def normalize_capitalization(sentence):
+    doc = nlp(sentence)
+
+    # normalize tokens in doc
+    normalized_tokens = [token.text.capitalize() for token in doc]
+    
+    # Verbinden Sie die Tokens zu einem normalisierten Text
+    normalized_text = ' '.join(normalized_tokens)
+    
+    return normalized_text
+
+#####################################################################
+
+# use selfmade python-language-tool spellchecker
+
+def spellcheck(sentence):
+    corrected_text = service_language_tool.handle_request(sentence)
+    return corrected_text
+
+#####################################################################
 
 def rule_based_correction(sentence):
+    # sentence = normalize_capitalization(sentence)
+    sentence = spellcheck(sentence.lower())
+
     inspect_tokens(sentence)
 
     verb = extract_verb(sentence)
@@ -111,23 +136,23 @@ def rule_based_correction(sentence):
     plural_subjects = getSubjects("plural")
 
     # get rule for case 1
-    if subject == "ICH":
+    if subject.lower() == "ich":
         correct_verb = read_line_file(verb, 1)
 
     # get rule for case 2
-    elif subject == "DU":
+    elif subject.lower() == "du":
         correct_verb = read_line_file(verb, 2)
 
     # get rule for case 3
-    elif subject.lower() in singular_subjects:
+    elif str(subject.lower()) in str(singular_subjects):
         correct_verb = read_line_file(verb, 3)
     
     # get rule for case 4
-    elif subject == "WIR":
+    elif subject.lower() == "wir":
         correct_verb = read_line_file(verb, 4)
     
     # get rule for case 5
-    elif subject == "IHR":
+    elif subject.lower() == "ihr":
         correct_verb = read_line_file(verb, 5)
 
     # get rule for case 6

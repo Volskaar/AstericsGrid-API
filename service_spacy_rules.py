@@ -11,7 +11,7 @@ nlp = spacy.load("de_core_news_sm")
 def inspect_tokens(sentence):
     doc = nlp(sentence)
     for token in doc:
-        print(f"Text: {token.text}, Dep: {token.dep_}, Tag: {token.tag_}")
+        print(f"Text: {token.text}, Dep: {token.dep_}, Tag: {token.tag_}, Pos: {token.pos_}")
 
 #####################################################################
         
@@ -21,10 +21,10 @@ def extract_subject(sentence):
     doc = nlp(sentence)
     
     subject = None
-    
+    print("Test 0")
     for token in doc:
         # Check for pronouns in subject position
-        if token.pos_ == "PRON" or token.pos_ == "NOUN" and token.dep_ in ["sb", "da", "nom"]:
+        if token.pos_ in ["PRON", "PROPN", "NOUN"] and token.dep_ in ["sb", "nom", "nk"]:
             subject = token.text
             break  # Stop after finding the first subject
     
@@ -82,6 +82,23 @@ def read_line_file(word, line):
         return "Die angegebene Datei wurde nicht gefunden."
 
 #####################################################################
+def getSubjects(type):
+    subjects = []
+    word_path = "subjects/" + type + ".txt"
+    print(word_path)
+
+    try:
+        with open(word_path, 'r') as datei:
+            zeilen = datei.readlines()
+            for line in zeilen:
+                subjects.append(str(line))
+    
+    except FileNotFoundError:
+        return "Die angegebene Datei wurde nicht gefunden."
+    
+    return subjects
+#####################################################################
+
 
 def rule_based_correction(sentence):
     inspect_tokens(sentence)
@@ -89,43 +106,42 @@ def rule_based_correction(sentence):
     verb = extract_verb(sentence)
     subject = extract_subject(sentence)
 
+    # create subject arrays out of textfiles
+    singular_subjects = getSubjects("singular")
+    plural_subjects = getSubjects("plural")
+
     # get rule for case 1
-    if subject == "ich" or subject == "Ich":
+    if subject == "ICH":
         correct_verb = read_line_file(verb, 1)
-    
+
     # get rule for case 2
-    elif subject == "du" or subject == "Du":
+    elif subject == "DU":
         correct_verb = read_line_file(verb, 2)
+
+    # get rule for case 3
+    elif subject.lower() in singular_subjects:
+        correct_verb = read_line_file(verb, 3)
     
     # get rule for case 4
-    elif subject == "wir" or subject == "Wir":
+    elif subject == "WIR":
         correct_verb = read_line_file(verb, 4)
     
     # get rule for case 5
-    elif subject == "ihr" or subject == "Ihr":
+    elif subject == "IHR":
         correct_verb = read_line_file(verb, 5)
 
-    # rules for case 3 (multiple)
-    elif subject == "er" or subject == "Er":
-        correct_verb = read_line_file(verb, 3)
+    # get rule for case 6
+    elif subject.lower() in plural_subjects:
+        correct_verb = read_line_file(verb, 6)
 
-    elif subject == "sie" or subject == "Sie":
-        correct_verb = read_line_file(verb, 3)
-
-    elif subject == "es" or subject == "Es":
-        correct_verb = read_line_file(verb, 3)
-
-    # rules for case 3 (things/names singular) or case 6 (things/names plural)
+    
+    # rules for default case
     else:
-        if is_plural(subject):
-            print("Ist plural")
-            correct_verb = read_line_file(verb, 6)
-        else:
-            print("Ist singular")
-            correct_verb = read_line_file(verb, 3)
+        print("Edge Case / unbekanntes Subjekt")
+        correct_verb = read_line_file(verb, 3)
 
     corrected_sentence = sentence.replace(verb, correct_verb.strip())
 
-    return corrected_sentence;
+    return corrected_sentence
 
         

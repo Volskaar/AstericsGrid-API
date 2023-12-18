@@ -1,4 +1,5 @@
 import spacy
+import service_language_tool
 
 # load german spacy model
 
@@ -9,18 +10,19 @@ nlp = spacy.load("de_core_news_sm")
 # debug function to inspect all tokens of a sentence
 
 def inspect_tokens(sentence):
-    doc = nlp(sentence.capitalize())
+    doc = nlp(service_language_tool.handle_request(sentence.lower()))
 
+    print(doc)
 
     for token in doc:
-        print(f"Text: {token.text.capitalize()}, Dep: {token.dep_}, Tag: {token.tag_}, Pos: {token.pos_}")
+        print(f"Text: {token.text}, Dep: {token.dep_}, Tag: {token.tag_}, Pos: {token.pos_}")
 
 #####################################################################
         
 # extract the subject from the sentence
 
 def extract_subject(sentence):
-    doc = nlp(sentence.capitalize())
+    doc = nlp(service_language_tool.handle_request(sentence.lower()))
     
     subject = None
 
@@ -38,7 +40,7 @@ def extract_subject(sentence):
 # extract verb from sentence
 
 def extract_verb(sentence):
-    doc = nlp(sentence.capitalize())
+    doc = nlp(service_language_tool.handle_request(sentence.lower()))
     
     for token in doc:
         # Check for the main verb (ROOT) in the sentence
@@ -115,32 +117,26 @@ def rule_based_correction(sentence):
     # get rule for case 1
     if subject.lower() == "ich":
         correct_verb = read_line_file(verb, 1)
-        print("Test 1")
 
     # get rule for case 2
     elif subject.lower() == "du":
         correct_verb = read_line_file(verb, 2)
-        print("Test 2")
 
     # get rule for case 3
     elif subject.lower() + "\n" in singular_subjects:
         correct_verb = read_line_file(verb, 3)
-        print("Test 3")
     
     # get rule for case 4
     elif subject.lower() == "wir":
         correct_verb = read_line_file(verb, 4)
-        print("Test 4")
     
     # get rule for case 5
     elif subject.lower == "ihr":
         correct_verb = read_line_file(verb, 5)
-        print("Test 5")
 
     # get rule for case 6
     elif subject.lower() + "\n" in plural_subjects:
         correct_verb = read_line_file(verb, 6)
-        print("Test 6")
 
     
     # rules for default case

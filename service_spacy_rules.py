@@ -9,19 +9,21 @@ nlp = spacy.load("de_core_news_sm")
 # debug function to inspect all tokens of a sentence
 
 def inspect_tokens(sentence):
-    doc = nlp(sentence)
+    doc = nlp(sentence.capitalize())
+
+
     for token in doc:
-        print(f"Text: {token.text}, Dep: {token.dep_}, Tag: {token.tag_}, Pos: {token.pos_}")
+        print(f"Text: {token.text.capitalize()}, Dep: {token.dep_}, Tag: {token.tag_}, Pos: {token.pos_}")
 
 #####################################################################
         
 # extract the subject from the sentence
 
 def extract_subject(sentence):
-    doc = nlp(sentence)
+    doc = nlp(sentence.capitalize())
     
     subject = None
-    print("Test 0")
+
     for token in doc:
         # Check for pronouns in subject position
         if token.pos_ in ["PRON", "PROPN", "NOUN"] and token.dep_ in ["sb", "nom", "nk"]:
@@ -36,7 +38,7 @@ def extract_subject(sentence):
 # extract verb from sentence
 
 def extract_verb(sentence):
-    doc = nlp(sentence)
+    doc = nlp(sentence.capitalize())
     
     for token in doc:
         # Check for the main verb (ROOT) in the sentence
@@ -88,7 +90,7 @@ def getSubjects(type):
     print(word_path)
 
     try:
-        with open(word_path, 'r') as datei:
+        with open(word_path, 'r', encoding = "utf-8") as datei:
             zeilen = datei.readlines()
             for line in zeilen:
                 subjects.append(str(line))
@@ -111,28 +113,34 @@ def rule_based_correction(sentence):
     plural_subjects = getSubjects("plural")
 
     # get rule for case 1
-    if subject == "ICH":
+    if subject.lower() == "ich":
         correct_verb = read_line_file(verb, 1)
+        print("Test 1")
 
     # get rule for case 2
-    elif subject == "DU":
+    elif subject.lower() == "du":
         correct_verb = read_line_file(verb, 2)
+        print("Test 2")
 
     # get rule for case 3
-    elif subject.lower() in singular_subjects:
+    elif subject.lower() + "\n" in singular_subjects:
         correct_verb = read_line_file(verb, 3)
+        print("Test 3")
     
     # get rule for case 4
-    elif subject == "WIR":
+    elif subject.lower() == "wir":
         correct_verb = read_line_file(verb, 4)
+        print("Test 4")
     
     # get rule for case 5
-    elif subject == "IHR":
+    elif subject.lower == "ihr":
         correct_verb = read_line_file(verb, 5)
+        print("Test 5")
 
     # get rule for case 6
-    elif subject.lower() in plural_subjects:
+    elif subject.lower() + "\n" in plural_subjects:
         correct_verb = read_line_file(verb, 6)
+        print("Test 6")
 
     
     # rules for default case
@@ -140,7 +148,9 @@ def rule_based_correction(sentence):
         print("Edge Case / unbekanntes Subjekt")
         correct_verb = read_line_file(verb, 3)
 
-    corrected_sentence = sentence.replace(verb, correct_verb.strip())
+    corrected_sentence = sentence.replace(verb.upper(), correct_verb.strip().upper())
+
+    print(corrected_sentence)
 
     return corrected_sentence
 

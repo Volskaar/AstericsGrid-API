@@ -11,7 +11,7 @@ echo Tests with more than one known subject / known verbs
 curl -X POST http://127.0.0.1:5000/spacy -H "Content-Type: text/plain" -H "charset=utf-8" -d "ICH HABEN VIEL GELD UND ER HABEN KEIN GELD"
 curl -X POST http://127.0.0.1:5000/spacy -H "Content-Type: text/plain" -H "charset=utf-8" -d "DU ESSEN GERNE PIZZA ABER OPA ESSEN NICHT GERNE PIZZA"
 curl -X POST http://127.0.0.1:5000/spacy -H "Content-Type: text/plain" -H "charset=utf-8" -d "OPA SEIN SEHR ALT GENAUSO WIE OMA"
-rem curl -X POST http://127.0.0.1:5000/spacy -H "Content-Type: text/plain" -H "charset=utf-8" -d "WIR TRINKEN GERNE COLA DOCH OMA TRINKEN WASSER"
+curl -X POST http://127.0.0.1:5000/spacy -H "Content-Type: text/plain" -H "charset=utf-8" -d "WIR TRINKEN GERNE COLA DOCH OMA TRINKEN WASSER"
 curl -X POST http://127.0.0.1:5000/spacy -H "Content-Type: text/plain" -H "charset=utf-8" -d "OMA TRINKEN WASSER DOCH WIR TRINKEN GERNE COLA"
 curl -X POST http://127.0.0.1:5000/spacy -H "Content-Type: text/plain" -H "charset=utf-8" -d "ICH SPIELEN GERNE MONOPOLY UND FREUNDE SPIELEN GERNE CLUEDO "
 echo .

@@ -7,6 +7,9 @@ German Grammar Correction API for the AstericsGrid Project
 pip install Flask <br>
 pip install --upgrade language_tool_python
 
+### Include spacy model:
+python -m spacy download de_core_news_sm
+
 ### How to run:
 1. clone repo to local <br>
 2. navigate into folder with cmd <br>

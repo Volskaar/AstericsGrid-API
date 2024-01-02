@@ -21,36 +21,40 @@ def inspect_tokens(sentence):
         
 # extract the subject from the sentence
 
-def extract_subject(sentence):
+def extract_subjects(sentence):
     doc = nlp(service_language_tool.handle_request(sentence.lower()))
     
-    subject = None
+    subjects = []
 
     for token in doc:
         # Check for pronouns in subject position
-        if token.pos_ in ["PRON", "PROPN", "NOUN"] and token.dep_ in ["sb", "nom", "nk"]:
-            subject = token.text
-            break  # Stop after finding the first subject
-    
-    print("Subjekt: " + str(subject))
-    return subject
+        # "ADV" is not correct in this context, but is used for testing purposes
+        if token.pos_ in ["PRON", "PROPN", "NOUN", "ADV"] and token.dep_ in ["sb", "nom", "nk", "cj"]:
+            subjects.append(token.text)
+            #break  # Stop after finding the first subject
+    print("Subjects: ")
+    print(subjects)
+    return subjects
 
 #####################################################################
 
 # extract verb from sentence
 
-def extract_verb(sentence):
+def extract_verbs(sentence):
     doc = nlp(service_language_tool.handle_request(sentence.lower()))
     
+    verbs = []
+
     for token in doc:
         # Check for the main verb (ROOT) in the sentence
-        #if token.dep_ == "ROOT" and token.pos_ == "VERB":
-        if token.dep_ == "ROOT":
-            verb = token.text
-            break  # Stop after finding the main verb
-    
-    print("Verb: " + verb)
-    return verb
+        # type specifications are not final and just for testing purposes
+        #if token.dep_ == "ROOT" or token.pos_ == "VERB":
+        if token.dep_ in ["ROOT"] or  token.pos_ in ["VERB"] or token.dep_ in ["cj"] and token.pos in ["NOUN"]:
+            verbs.append(token.text)
+            #break  # Stop after finding the main verb
+    print("Verbs: ")
+    print(verbs)
+    return verbs
 
 #####################################################################
 
@@ -107,47 +111,52 @@ def getSubjects(type):
 def rule_based_correction(sentence):
     inspect_tokens(sentence)
 
-    verb = extract_verb(sentence)
-    subject = extract_subject(sentence)
+    verbs = extract_verbs(sentence)
+    subjects = extract_subjects(sentence)
 
     # create subject arrays out of textfiles
     singular_subjects = getSubjects("singular")
     plural_subjects = getSubjects("plural")
+    verbIndex = 0
 
-    # get rule for case 1
-    if subject.lower() == "ich":
-        correct_verb = read_line_file(verb, 1)
+    for subject in subjects:
+        # get rule for case 1
+        if subject.lower() == "ich":
+            correct_verb = read_line_file(verbs[verbIndex], 1)
 
-    # get rule for case 2
-    elif subject.lower() == "du":
-        correct_verb = read_line_file(verb, 2)
+        # get rule for case 2
+        elif subject.lower() == "du":
+            correct_verb = read_line_file(verbs[verbIndex], 2)
 
-    # get rule for case 3
-    elif subject.lower() + "\n" in singular_subjects:
-        correct_verb = read_line_file(verb, 3)
-    
-    # get rule for case 4
-    elif subject.lower() == "wir":
-        correct_verb = read_line_file(verb, 4)
-    
-    # get rule for case 5
-    elif subject.lower == "ihr":
-        correct_verb = read_line_file(verb, 5)
+        # get rule for case 3
+        elif subject.lower() + "\n" in singular_subjects:
+            print("Singular objects")
+            correct_verb = read_line_file(verbs[verbIndex], 3)
+        
+        # get rule for case 4
+        elif subject.lower() == "wir":
+            correct_verb = read_line_file(verbs[verbIndex], 4)
+        
+        # get rule for case 5
+        elif subject.lower() == "ihr":
+            correct_verb = read_line_file(verbs[verbIndex], 5)
 
-    # get rule for case 6
-    elif subject.lower() + "\n" in plural_subjects:
-        correct_verb = read_line_file(verb, 6)
+        # get rule for case 6
+        elif subject.lower() + "\n" in plural_subjects:
+            print("Plural objects")
+            correct_verb = read_line_file(verbs[verbIndex], 6)
+ 
+        # rules for default case
+        else:
+            print("Edge Case / unbekanntes Subjekt")
+            correct_verb = read_line_file(verbs[verbIndex], 3)
+        print("Loops: " + str(verbIndex))
+        sentence = sentence.replace(verbs[verbIndex].upper(), correct_verb.strip().upper(), 1)
+        verbIndex = verbIndex + 1
 
-    
-    # rules for default case
-    else:
-        print("Edge Case / unbekanntes Subjekt")
-        correct_verb = read_line_file(verb, 3)
 
-    corrected_sentence = sentence.replace(verb.upper(), correct_verb.strip().upper())
+    print(sentence)
 
-    print(corrected_sentence)
-
-    return corrected_sentence
+    return sentence
 
         

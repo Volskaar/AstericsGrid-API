@@ -138,12 +138,13 @@ def rule_based_correction(sentence):
             correct_verb = read_line_file(verbs[verbIndex], 4)
         
         # get rule for case 5
-        elif subject.lower == "ihr":
+        elif subject.lower() == "ihr":
             correct_verb = read_line_file(verbs[verbIndex], 5)
 
         # get rule for case 6
         elif subject.lower() + "\n" in plural_subjects:
-            correct_verb = read_line_file(verbs, 6)
+            print("Plural objects")
+            correct_verb = read_line_file(verbs[verbIndex], 6)
  
         # rules for default case
         else:

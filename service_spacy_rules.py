@@ -122,10 +122,12 @@ def rule_based_correction(sentence):
     for subject in subjects:
         # get rule for case 1
         if subject.lower() == "ich":
+            print("Case: ich")
             correct_verb = read_line_file(verbs[verbIndex], 1)
 
         # get rule for case 2
         elif subject.lower() == "du":
+            print("Case: du")
             correct_verb = read_line_file(verbs[verbIndex], 2)
 
         # get rule for case 3
@@ -135,10 +137,12 @@ def rule_based_correction(sentence):
         
         # get rule for case 4
         elif subject.lower() == "wir":
+            print("Case: wir")
             correct_verb = read_line_file(verbs[verbIndex], 4)
         
         # get rule for case 5
         elif subject.lower() == "ihr":
+            print("Case: ihr")
             correct_verb = read_line_file(verbs[verbIndex], 5)
 
         # get rule for case 6

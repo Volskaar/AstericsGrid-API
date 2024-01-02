@@ -63,12 +63,7 @@ def lemmatize_word(word):
 
 #####################################################################
 
-#  check if Subject is plural or singular
-
-def is_plural(word):
-    return False
-
-#####################################################################
+# read lines in verb-conjugation file
 
 def read_line_file(word, line):
     verb = lemmatize_word(word)
@@ -83,9 +78,13 @@ def read_line_file(word, line):
             else:
                 return f"Die Datei hat weniger als {line} Zeilen."
     except FileNotFoundError:
-        return "Die angegebene Datei wurde nicht gefunden."
+        # if verb file not found return base-case of word
+        return lemmatize_word(word)
 
 #####################################################################
+    
+# create array from subjects in subject-files
+
 def getSubjects(type):
     subjects = []
     word_path = "subjects/" + type + ".txt"
@@ -103,6 +102,7 @@ def getSubjects(type):
     return subjects
 #####################################################################
 
+# main function for spacy rule based correction of grammar
 
 def rule_based_correction(sentence):
     inspect_tokens(sentence)
@@ -122,10 +122,6 @@ def rule_based_correction(sentence):
     elif subject.lower() == "du":
         correct_verb = read_line_file(verb, 2)
 
-    # get rule for case 3
-    elif subject.lower() + "\n" in singular_subjects:
-        correct_verb = read_line_file(verb, 3)
-    
     # get rule for case 4
     elif subject.lower() == "wir":
         correct_verb = read_line_file(verb, 4)
@@ -133,6 +129,10 @@ def rule_based_correction(sentence):
     # get rule for case 5
     elif subject.lower == "ihr":
         correct_verb = read_line_file(verb, 5)
+
+    # get rule for case 3
+    elif subject.lower() + "\n" in singular_subjects:
+        correct_verb = read_line_file(verb, 3)
 
     # get rule for case 6
     elif subject.lower() + "\n" in plural_subjects:

@@ -155,9 +155,18 @@ def rule_based_correction(sentence):
             print("Edge Case / unbekanntes Subjekt")
             correct_verb = read_line_file(verbs[verbIndex], 3)
         print("Loops: " + str(verbIndex))
-        sentence = sentence.replace(verbs[verbIndex].upper(), correct_verb.strip().upper(), 1)
-        verbIndex = verbIndex + 1
+        #sentence = sentence.replace(verbs[verbIndex].upper(), correct_verb.strip().upper(), 1)
 
+        words = sentence.split()
+
+        for i in range(len(words)-1):
+            if words[i].strip(",").upper() == subject.upper():
+                words[i+1] = correct_verb.strip().upper()
+
+        # Baue den Satz wieder zusammen
+        sentence = ' '.join(words)
+
+        verbIndex = verbIndex + 1
 
     print(sentence)
 

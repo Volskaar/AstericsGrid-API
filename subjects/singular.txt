@@ -8,4 +8,5 @@ Nachbar
 feuerwehr
 polizei
 lehrerin
+lehrer
 ärztin

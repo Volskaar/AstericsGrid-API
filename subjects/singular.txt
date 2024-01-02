@@ -4,7 +4,7 @@ junge
 mädchen
 opa
 oma
-nachbar
+Nachbar
 feuerwehr
 polizei
 lehrerin

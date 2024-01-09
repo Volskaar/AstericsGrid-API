@@ -68,7 +68,7 @@ def run_spacy_grammar_check():
 # with JSON based input/output
 
 @app.route('/spacy2', methods=['POST'])
-def run_spacy_grammar_check():
+def run_spacy_json_grammar_check():
     text = service_json_handler.json_to_string(request.data.decode('UTF-8'))
     corrected_text = service_spacy_rules.rule_based_correction(text)
     output = service_json_handler.string_to_json(corrected_text)

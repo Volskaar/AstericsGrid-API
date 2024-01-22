@@ -170,6 +170,6 @@ def rule_based_correction(sentence):
 
     print(sentence)
 
-    return sentence
+    return {"msg": sentence}
 
         

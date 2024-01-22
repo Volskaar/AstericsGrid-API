@@ -60,7 +60,8 @@ def run_duden_api_check():
 def run_spacy_grammar_check():
     text = str(request.data.decode('UTF-8'))
     output = service_spacy_rules.rule_based_correction(text)
-    return output, 200
+    print(output)
+    return output, 200, {'Content-Type': 'application/json'}
 
 ##################################################################
 
@@ -72,4 +73,5 @@ def run_spacy_json_grammar_check():
     text = service_json_handler.json_to_string(request.data.decode('UTF-8'))
     corrected_text = service_spacy_rules.rule_based_correction(text)
     output = service_json_handler.string_to_json(corrected_text)
+    print(output)
     return output, 200

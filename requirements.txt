@@ -20,6 +20,7 @@ cymem==2.0.8
 de-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/de_core_news_sm-3.7.0/de_core_news_sm-3.7.0-py3-none-any.whl
 feedparser==6.0.11
 Flask==3.0.0
+Flask-Cors==4.0.0
 future==0.18.3
 idna==3.6
 inexactsearch==1.0.2

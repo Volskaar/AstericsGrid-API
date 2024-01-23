@@ -164,12 +164,12 @@ def rule_based_correction(sentence):
                 words[i+1] = correct_verb.strip().upper()
 
         # Baue den Satz wieder zusammen
-        sentence = ' '.join(words)
+        sentence = " ".join(words)
 
         verbIndex = verbIndex + 1
 
     print(sentence)
 
-    return {"msg": sentence}
+    return sentence
 
         

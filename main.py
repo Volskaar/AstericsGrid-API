@@ -1,4 +1,6 @@
-from flask import Flask, request
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+
 import service_language_tool
 import service_duden_api
 import service_spacy_rules
@@ -7,6 +9,7 @@ import service_json_handler
 ##################################################################
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 ##################################################################
 
@@ -61,7 +64,7 @@ def run_spacy_grammar_check():
     text = str(request.data.decode('UTF-8'))
     output = service_spacy_rules.rule_based_correction(text)
     print(output)
-    return output, 200, {'Content-Type': 'application/json'}
+    return jsonify({"msg": output}), 200, {'Content-Type': 'application/json'}
 
 ##################################################################
 
